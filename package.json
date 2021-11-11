@@ -1,0 +1,14 @@
+{
+  "name": "fetch-project",
+  "version": "1.0.0",
+  "description": "Proyecto para peticiones",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test/index.js"
+  },
+  "author": "Edder Silva",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
