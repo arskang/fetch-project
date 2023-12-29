@@ -1,5 +1,5 @@
 {
-  "name": "fetch-project",
+  "name": "@arskang/fetchuruza",
   "version": "1.0.0",
   "description": "Proyecto para peticiones",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "node ./test/index.js"
   },
   "author": "Edder Silva",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "node-fetch": "^2.6.1"
   }

@@ -1,6 +1,6 @@
 
 // require('https').globalAgent.options.ca = require('ssl-root-cas/latest').create();
-const Caperuza = require('../index');
+const Fetchuruza = require('../index');
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
 
@@ -11,11 +11,11 @@ const urlFamoso = (actorName) => `https://api.themoviedb.org/3/search/person?api
 
     try {
 
-        const obtener = new Caperuza();
+        const fetchu = new Fetchuruza();
 
-        let res = await obtener.getJson({
+        let res = await fetchu.getJson({
             url: "https://api.themoviedb.org/3/search/person",
-            data: {
+            params: {
                 "api_key": apiKeyTMD,
                 "include_adult": false,
                 language: "es-MX",
@@ -26,34 +26,77 @@ const urlFamoso = (actorName) => `https://api.themoviedb.org/3/search/person?api
 
         console.log("res", res);
 
-        let gpql2 = await obtener.graphql({
-            url: "http://35.225.97.245:4900/graphql",
+        setTimeout(async () => {
+            fetchu.cancel();
+        }, 3000)
+
+        const Authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI1MjQ2NTEyMDAsIl9pZCI6IjVlNzUxZDFhNGY0MDBkYzBlZDBhMjAxZCIsImNvbXBhbnkiOiI1ZTc1MWI3MjRmNDAwZGMwZWQwYTIwMWMiLCJFbXBsb3llZSI6IjVlNzUxZDFhNGY0MDBkYzBlZDBhMjAxZCIsInVzZXJJRCI6IjVlNzUxZDFhNGY0MDBkYzBlZDBhMjAxZCIsImNvbXBhbnlJRCI6IjVlNzUxYjcyNGY0MDBkYzBlZDBhMjAxYyIsIkVtcGxveWVlSUQiOiI1ZTc1MWQxYTRmNDAwZGMwZWQwYTIwMWQifQ.5R7Zy1O2CJjTkTZ-9h9CESepSbpFANq87iWrYI5H2Ho";
+
+        fetchu.setCancelToken();
+
+        let gpql2 = await fetchu.graphql({
+            url: "https://graphql.levita.dev",
             query: `
-                query isUsername($username: String!) {
-                    isUsername(username: $username)
-                }
+                  query Employees(
+                        $pagination: Pagination,
+                        $search: EmployeeSearch,
+                        $statusIMSS: StatusIMSS,
+                        $or: EmployeeSearch,
+                        $id: WhereClauseID
+                  ) {
+                        employees(
+                              pagination: $pagination,
+                              search: $search,
+                              statusIMSS: $statusIMSS,
+                              or: $or, id: $id
+                        ) {
+                              entities {
+                                    id
+                              }
+                        }
+                  }
             `,
-            variables: { username: "administrador" }
+            // variables: { username: "administrador" },
+            headers: { Authorization, }
+        }, (error) => {
+            console.log("error callback", error);
         });
 
         console.log("gpql2", gpql2);
-
-        await obtener.graphql({});
-
-        let gpql = await obtener.graphql({
-            url: "https://35.225.97.245:4000/graphql",
-            query: `
-                query getBusquedaClaveProdServ($palabra: String!) {
-                    getBusquedaClaveProdServ(palabra: $palabra) {
-                        claveCompleta
-                        descripcion
-                    }
-                }
-            `,
-            variables: { pal: 2 }
+        
+        fetchu.activeDebug();
+        
+        res = await fetchu.getJson({
+            url: "https://api.themoviedb.org/3/search/person",
+            params: {
+                "api_key": apiKeyTMD,
+                "include_adult": false,
+                language: "es-MX",
+                query: "Jennifer Aniston",
+                page: 1,
+            }
         });
 
-        console.log("gpql", gpql);
+        console.log("res", res);
+
+        fetchu.cancelDebug();
+
+        // await fetchu.graphql({});
+
+        // let gpql = await fetchu.graphql({
+        //     url: "https://35.225.97.245:4000/graphql",
+        //     query: `
+        //         query getBusquedaClaveProdServ($palabra: String!) {
+        //             getBusquedaClaveProdServ(palabra: $palabra) {
+        //                 claveCompleta
+        //                 descripcion
+        //             }
+        //         }
+        //     `,
+        //     variables: { pal: 2 }
+        // });
+
+        // console.log("gpql", gpql);
 
     } catch({message}) { console.error("error", message); }
 
